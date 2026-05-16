@@ -74,7 +74,8 @@ function Bundle-AllPayloads([string]$srcDir) {
         }
         foreach ($item in $items) {
             # Skip large EXE files (>4MB) — they exceed C# 16MB string literal limit when base64-encoded
-            if ($item.Extension.ToLower() -eq '.exe' -and $item.Length -gt 4MB) { continue }
+            # arduino-cli.exe (35MB) is downloaded at install time instead
+            if ($item.Extension.ToLower() -eq '.exe' -and $item.Length -gt 4194304) { continue }
             $rel = $item.FullName.Substring($srcDir.Length).TrimStart('\','/').Replace('\','/')
             $bytes = [System.IO.File]::ReadAllBytes($item.FullName)
             $sb.AppendLine($rel) | Out-Null
