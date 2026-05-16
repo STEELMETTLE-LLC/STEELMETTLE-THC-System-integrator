@@ -8,9 +8,9 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$dllPath = Join-Path $scriptDir 'PoKeys.dll'
+$dllPath = Join-Path $scriptDir 'PoKeysDevice_DLL.dll'
 if (-not (Test-Path $dllPath)) {
-    throw "PoKeys.dll not found: $dllPath"
+    throw "PoKeysDevice_DLL.dll not found: $dllPath"
 }
 
 Add-Type -Path $dllPath

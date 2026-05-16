@@ -24,7 +24,7 @@ $TORCH_ON_PIN     = 15   # Pendant pin 23 (PK15) ← Arduino D29
 $ARC_OK_OUT_PIN   = 16   # Pendant pin 25 (PK16) ← Arduino D28
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$dllPath   = Join-Path $scriptDir 'PoKeys.dll'
+$dllPath   = Join-Path $scriptDir 'PoKeysDevice_DLL.dll'
 $bridgeScript = Join-Path $scriptDir 'pokeys-runtime-bridge.ps1'
 
 function Get-PinFunctionByte([object]$Device, [int]$PinNumber) {
@@ -69,7 +69,7 @@ if (-not $doDeploy -and -not $runBridge -and -not $doVerify) {
 
 # --- load DLL ---
 if (-not (Test-Path $dllPath)) {
-    Write-Error "PoKeys.dll not found: $dllPath"
+    Write-Error "PoKeysDevice_DLL.dll not found: $dllPath"
     exit 3
 }
 Add-Type -Path $dllPath

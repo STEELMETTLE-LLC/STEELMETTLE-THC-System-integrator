@@ -732,14 +732,14 @@ if ($LASTEXITCODE -gt 7) {
 }
 
 # 2b) Inject vendor DLLs stripped by public-github-copy (required at runtime)
-$pokeysDllSrc = Join-Path $baseDir 'tools\PoKeys.dll'
+$pokeysDllSrc = Join-Path $baseDir 'tools\PoKeysDevice_DLL.dll'
 if (Test-Path $pokeysDllSrc) {
     $toolsDst = Join-Path $publicBinaryDir 'tools'
     Ensure-Directory $toolsDst
-    Copy-Item $pokeysDllSrc (Join-Path $toolsDst 'PoKeys.dll') -Force
-    Log 'Injected tools\PoKeys.dll into binary-only output.'
+    Copy-Item $pokeysDllSrc (Join-Path $toolsDst 'PoKeysDevice_DLL.dll') -Force
+    Log 'Injected tools\PoKeysDevice_DLL.dll into binary-only output.'
 } else {
-    Log 'WARNING: tools\PoKeys.dll not found in source - skipping DLL injection.'
+    Log 'WARNING: tools\PoKeysDevice_DLL.dll not found in source - skipping DLL injection.'
 }
 
 # 2c) Retarget updater config for the public download repository
