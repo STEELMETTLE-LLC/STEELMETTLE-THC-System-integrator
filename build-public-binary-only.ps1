@@ -871,6 +871,7 @@ $installerArgs = @(
     "/reference:$wfPath",
     "/reference:$drawingPath",
     "/reference:$ioCompPath",
+    "/reference:C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.IO.Compression.dll",
     "/out:$installerExe",
     $installerCsPath
 )
