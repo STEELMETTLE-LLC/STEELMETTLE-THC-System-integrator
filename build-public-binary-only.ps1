@@ -73,6 +73,8 @@ function Bundle-AllPayloads([string]$srcDir) {
             Get-ChildItem -Recurse -File $dir | Where-Object { $_.Extension.ToLower() -ne '.md' }
         }
         foreach ($item in $items) {
+            # Skip large EXE files (>4MB) — they exceed C# 16MB string literal limit when base64-encoded
+            if ($item.Extension.ToLower() -eq '.exe' -and $item.Length -gt 4MB) { continue }
             $rel = $item.FullName.Substring($srcDir.Length).TrimStart('\','/').Replace('\','/')
             $bytes = [System.IO.File]::ReadAllBytes($item.FullName)
             $sb.AppendLine($rel) | Out-Null
@@ -596,6 +598,9 @@ static class SteelMettleInstaller
             SetProgress(72, "Extracting firmware payloads...");
             ExtractFirmwareBundle(_installDir);
 
+            SetProgress(78, "Downloading arduino-cli...");
+            DownloadArduinoCli(_installDir);
+
             SetProgress(85, "Creating shortcuts...");
             string launcherExe = Path.Combine(_installDir, "STEELMETTLE-THC-Systems-Integrator.exe");
             string icoPath     = Path.Combine(_installDir, "assets", "SteelMettle.ico");
@@ -639,6 +644,36 @@ static class SteelMettleInstaller
     {
         string exe = Path.Combine(_installDir, "STEELMETTLE-THC-Systems-Integrator.exe");
         if (File.Exists(exe)) System.Diagnostics.Process.Start(exe);
+    }
+
+    static void DownloadArduinoCli(string baseDir)
+    {
+        string toolsDir = Path.Combine(baseDir, "tools");
+        string dest = Path.Combine(toolsDir, "arduino-cli.exe");
+        if (File.Exists(dest)) return;  // Already present (reinstall/update)
+        if (!Directory.Exists(toolsDir)) Directory.CreateDirectory(toolsDir);
+        try
+        {
+            string url = "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Windows_64bit.zip";
+            string zip = Path.Combine(Path.GetTempPath(), "arduino-cli.zip");
+            using (var wc = new System.Net.WebClient())
+                wc.DownloadFile(url, zip);
+            // Extract arduino-cli.exe from zip
+            using (var fs = File.OpenRead(zip))
+            using (var archive = new System.IO.Compression.ZipArchive(fs, System.IO.Compression.ZipArchiveMode.Read))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (entry.Name.Equals("arduino-cli.exe", StringComparison.OrdinalIgnoreCase))
+                    {
+                        entry.ExtractToFile(dest, true);
+                        break;
+                    }
+                }
+            }
+            File.Delete(zip);
+        }
+        catch { /* Non-fatal: user can place arduino-cli.exe manually */ }
     }
 
     static void ExtractFirmwareBundle(string baseDir)
