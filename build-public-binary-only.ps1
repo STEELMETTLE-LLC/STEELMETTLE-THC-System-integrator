@@ -870,6 +870,7 @@ $installerArgs = @(
     '/optimize+',
     "/reference:$wfPath",
     "/reference:$drawingPath",
+    "/reference:$ioCompPath",
     "/out:$installerExe",
     $installerCsPath
 )
