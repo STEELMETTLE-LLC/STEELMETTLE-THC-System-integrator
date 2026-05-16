@@ -698,7 +698,11 @@ static class SteelMettleInstaller
             string fullPath = Path.Combine(baseDir, relPath.Replace('/', Path.DirectorySeparatorChar));
             string dir = Path.GetDirectoryName(fullPath);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            File.WriteAllBytes(fullPath, Convert.FromBase64String(b64data));
+            try {
+                File.WriteAllBytes(fullPath, Convert.FromBase64String(b64data));
+            } catch (System.IO.IOException) {
+                // File locked by running process (e.g. PoKeysDevice_DLL.dll already loaded) — skip, existing copy is fine
+            }
         }
     }
 
