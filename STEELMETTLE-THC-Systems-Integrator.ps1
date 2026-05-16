@@ -3245,14 +3245,10 @@ function Build-And-Flash-Arduino {
     try {
         Log "Compiling STEELMETTLE THC Core sketch in $sketchDir (board $fqbn)"
         Set-UiStage 'Compiling STEELMETTLE THC Core firmware...' 70
-        $prevEap = $ErrorActionPreference
-        try {
-            $ErrorActionPreference = 'Continue'
-            & $arduino compile --fqbn $fqbn $buildSketchDir 2>&1 | Tee-Object -FilePath (Join-Path $logDir 'build-arduino.log')
-            $compileExit = $LASTEXITCODE
-        } finally {
-            $ErrorActionPreference = $prevEap
-        }
+        $compileLog = Join-Path $logDir 'build-arduino.log'
+        cmd /c "`"$arduino`" compile --fqbn $fqbn `"$buildSketchDir`" > `"$compileLog`" 2>&1"
+        $compileExit = $LASTEXITCODE
+        if (Test-Path $compileLog) { Get-Content $compileLog | ForEach-Object { Log $_ } }
         if ($compileExit -ne 0) {
             throw "Arduino compile failed with exit code $compileExit"
         }
@@ -3270,14 +3266,10 @@ function Build-And-Flash-Arduino {
 
         Log "Uploading to $ComPort"
         Set-UiStage "Found Core board on $ComPort, installing firmware..." 85
-        $prevEap = $ErrorActionPreference
-        try {
-            $ErrorActionPreference = 'Continue'
-            & $arduino upload -p $ComPort --fqbn $fqbn $buildSketchDir 2>&1 | Tee-Object -FilePath (Join-Path $logDir 'flash-arduino.log')
-            $uploadExit = $LASTEXITCODE
-        } finally {
-            $ErrorActionPreference = $prevEap
-        }
+        $flashLog = Join-Path $logDir 'flash-arduino.log'
+        cmd /c "`"$arduino`" upload -p $ComPort --fqbn $fqbn `"$buildSketchDir`" > `"$flashLog`" 2>&1"
+        $uploadExit = $LASTEXITCODE
+        if (Test-Path $flashLog) { Get-Content $flashLog | ForEach-Object { Log $_ } }
         if ($uploadExit -ne 0) {
             throw "Arduino upload failed with exit code $uploadExit"
         }
