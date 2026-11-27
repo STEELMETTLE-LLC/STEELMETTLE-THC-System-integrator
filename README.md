@@ -11,13 +11,13 @@ The app checks for new installer releases and newer commits on the main branch.
 When a release is available, you will be prompted to install it. New commits without
 a release are reported with a link to the GitHub changes page.
 
-Private firmware checks use binary-only release repositories, not the source
-repositories. Create a fine-grained token with **Contents: Read-only** access
-only to **THC-AUTOSET-Firmware-Releases** and
-**STEELMETTLE-THC-Forge-Firmware-Releases**. Set the
-**STEELMETTLE_GITHUB_TOKEN** environment variable or save the token in
-**secrets/github.token** under the install folder. Do not share or commit it;
-programs running as your Windows account can access its environment variables.
+Firmware update checks download public, precompiled release assets; no GitHub
+account or token is required. The customer installer includes compiled firmware
+binaries only. Firmware source repositories remain private.
+
+Forge flashing requires the official STM32CubeProgrammer CLI installed and
+available in PATH. Core flashing downloads the Arduino CLI and required board
+support automatically on first use.
 
 ---
 *(c) STEELMETTLE LLC - All rights reserved.*
